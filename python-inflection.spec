@@ -1,4 +1,4 @@
-%if 0%{?fedora} > 12 || 0%{?rhel} > 7
+%if 0%{?fedora} > 12 || 0%{?rhel} >= 7
 %bcond_without python3
 %else
 %bcond_with python3
@@ -28,8 +28,8 @@ Source:  https://pypi.python.org/packages/source/i/%pkgname/%pkgname-%version.ta
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 %if %{with python3}
-BuildRequires: python3-devel
-BuildRequires: python3-setuptools
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-setuptools
 %endif  # with python3
 
 BuildArch:     noarch
@@ -41,10 +41,10 @@ Inflection is a port of Ruby on Rails' inflector to Python.
 
 
 %if %{with python3}
-%package -n python3-%pkgname
+%package -n python%{python3_pkgversion}-%pkgname
 Summary: A port of Ruby on Rails inflector to Python
 
-%description -n python3-%pkgname
+%description -n python%{python3_pkgversion}-%pkgname
 Inflection is a string transformation library. It singularizes and pluralizes
 English words, and transforms strings from CamelCase to underscored string.
 Inflection is a port of Ruby on Rails' inflector to Python.
@@ -79,7 +79,7 @@ Inflection is a port of Ruby on Rails' inflector to Python.
 %doc README.rst CHANGES.rst
 
 %if %{with python3}
-%files -n python3-%pkgname
+%files -n python%{python3_pkgversion}-%pkgname
 %defattr(-,root,root,-)
 %{python3_sitelib}/inflection.py
 %{python3_sitelib}/__pycache__/inflection.*.py*
