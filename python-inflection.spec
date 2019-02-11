@@ -28,7 +28,7 @@ Inflection is a port of Ruby on Rails' inflector to Python.}
 
 Name:    python-%project_name
 Version: 0.3.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: A port of Ruby on Rails inflector to Python
 
 Group:   Development/Tools
@@ -144,6 +144,10 @@ py.test-%{python3_other_version}
 
 
 %changelog
+* Mon Feb 11 2019 Mikhail Ushanov <gm.mephisto@gmail.com> - 0.3.1-3
+- Add python3_other package build for EPEL7
+- Add unit tests run on package build
+
 * Tue Jan 08 2019 Mikhail Ushanov <gm.mephisto@gmail.com> - 0.3.1-2
 - Build python3 package for epel7
 - Use python build and install macros
