@@ -1,21 +1,30 @@
-%if 0%{?fedora} > 12 || 0%{?rhel} >= 7
+%if 0%{?fedora} > 12 || 0%{?epel} >= 6
 %bcond_without python3
 %else
 %bcond_with python3
 %endif
 
-%if 0%{?rhel} && 0%{?rhel} <= 6
+%if 0%{?epel} >= 7
+%bcond_without python3_other
+%endif
+
+%if 0%{?rhel} <= 6
 %{!?__python2: %global __python2 /usr/bin/python2}
 %{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %endif
-%if %{with python3}
+%if 0%{with python3}
 %{!?__python3: %global __python3 /usr/bin/python3}
 %{!?python3_sitelib: %global python3_sitelib %(%{__python3} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+%{!?python3_pkgversion: %global python3_pkgversion 3}
 %endif  # with python3
 
-%define  pkgname inflection
+%global  project_name inflection
+%global  project_description %{expand:
+Inflection is a string transformation library. It singularizes and pluralizes
+English words, and transforms strings from CamelCase to underscored string.
+Inflection is a port of Ruby on Rails' inflector to Python.}
 
-Name:    python-%pkgname
+Name:    python-%project_name
 Version: 0.3.1
 Release: 2%{?dist}
 Summary: A port of Ruby on Rails inflector to Python
@@ -23,52 +32,60 @@ Summary: A port of Ruby on Rails inflector to Python
 Group:   Development/Tools
 License: MIT
 URL:     http://github.com/jpvanhal/inflection
-Source:  https://pypi.python.org/packages/source/i/%pkgname/%pkgname-%version.tar.gz
+Source:  https://pypi.python.org/packages/source/i/%project_name/%project_name-%version.tar.gz
 
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
-%if %{with python3}
-BuildRequires: python%{python3_pkgversion}-devel
-BuildRequires: python%{python3_pkgversion}-setuptools
-%endif  # with python3
 
 BuildArch:     noarch
 
-%description
-Inflection is a string transformation library. It singularizes and pluralizes
-English words, and transforms strings from CamelCase to underscored string.
-Inflection is a port of Ruby on Rails' inflector to Python.
+%description %{project_description}
 
 
-%if %{with python3}
-%package -n python%{python3_pkgversion}-%pkgname
-Summary: A port of Ruby on Rails inflector to Python
+%if 0%{with python3}
+%package -n python%{python3_pkgversion}-%project_name
+Summary: %{summary}
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-setuptools
 
-%description -n python%{python3_pkgversion}-%pkgname
-Inflection is a string transformation library. It singularizes and pluralizes
-English words, and transforms strings from CamelCase to underscored string.
-Inflection is a port of Ruby on Rails' inflector to Python.
+%description -n python%{python3_pkgversion}-%project_name %{project_description}
 %endif  # with python3
 
 
+%if 0%{with python3_other}
+%package -n python%{python3_other_pkgversion}-%project_name
+Summary: %{summary}
+BuildRequires: python%{python3_other_pkgversion}-devel
+BuildRequires: python%{python3_other_pkgversion}-setuptools
+
+%description -n python%{python3_other_pkgversion}-%project_name %{project_description}
+%endif  # with python3_other
+
+
 %prep
-%setup -q -n %pkgname-%version
+%setup -q -n %project_name-%version
 
 
 %build
 %py2_build
-%if %{with python3}
+%if 0%{with python3}
 %py3_build
 %endif  # with python3
+%if 0%{with python3_other}
+%py3_other_build
+%endif  # with python3_other
 
 
 %install
 [ "%buildroot" = "/" ] || rm -rf "%buildroot"
 
-%py2_install
-%if %{with python3}
+%if 0%{with python3_other}
+%py3_other_install
+%endif  # with python3_other
+%if 0%{with python3}
 %py3_install
 %endif  # with python3
+%py2_install
 
 
 %files
@@ -78,8 +95,8 @@ Inflection is a port of Ruby on Rails' inflector to Python.
 
 %doc README.rst CHANGES.rst
 
-%if %{with python3}
-%files -n python%{python3_pkgversion}-%pkgname
+%if 0%{with python3}
+%files -n python%{python3_pkgversion}-%project_name
 %defattr(-,root,root,-)
 %{python3_sitelib}/inflection.py
 %{python3_sitelib}/__pycache__/inflection.*.py*
@@ -87,6 +104,16 @@ Inflection is a port of Ruby on Rails' inflector to Python.
 
 %doc README.rst CHANGES.rst
 %endif  # with python3
+
+%if 0%{with python3_other}
+%files -n python%{python3_other_pkgversion}-%project_name
+%defattr(-,root,root,-)
+%{python3_other_sitelib}/inflection.py
+%{python3_other_sitelib}/__pycache__/inflection.*.py*
+%{python3_other_sitelib}/inflection-%{version}-*.egg-info
+
+%doc README.rst CHANGES.rst
+%endif  # with python3_other
 
 
 %clean
