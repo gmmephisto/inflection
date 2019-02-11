@@ -24,6 +24,8 @@ Inflection is a string transformation library. It singularizes and pluralizes
 English words, and transforms strings from CamelCase to underscored string.
 Inflection is a port of Ruby on Rails' inflector to Python.}
 
+%bcond_without tests
+
 Name:    python-%project_name
 Version: 0.3.1
 Release: 2%{?dist}
@@ -36,6 +38,9 @@ Source:  https://pypi.python.org/packages/source/i/%project_name/%project_name-%
 
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
+%if 0%{with tests}
+BuildRequires: pytest
+%endif  # with tests
 
 BuildArch:     noarch
 
@@ -47,6 +52,9 @@ BuildArch:     noarch
 Summary: %{summary}
 BuildRequires: python%{python3_pkgversion}-devel
 BuildRequires: python%{python3_pkgversion}-setuptools
+%if 0%{with tests}
+BuildRequires: python%{python3_pkgversion}-pytest
+%endif  # with tests
 
 %description -n python%{python3_pkgversion}-%project_name %{project_description}
 %endif  # with python3
@@ -57,6 +65,9 @@ BuildRequires: python%{python3_pkgversion}-setuptools
 Summary: %{summary}
 BuildRequires: python%{python3_other_pkgversion}-devel
 BuildRequires: python%{python3_other_pkgversion}-setuptools
+%if 0%{with tests}
+BuildRequires: python%{python3_other_pkgversion}-pytest
+%endif  # with tests
 
 %description -n python%{python3_other_pkgversion}-%project_name %{project_description}
 %endif  # with python3_other
@@ -74,6 +85,18 @@ BuildRequires: python%{python3_other_pkgversion}-setuptools
 %if 0%{with python3_other}
 %py3_other_build
 %endif  # with python3_other
+
+
+%check
+%if 0%{with tests}
+py.test-%{python2_version}
+%if 0%{with python3}
+py.test-%{python3_version}
+%endif  # with python3
+%if 0%{with python3_other}
+py.test-%{python3_other_version}
+%endif  # with python3_other
+%endif  # with tests
 
 
 %install
